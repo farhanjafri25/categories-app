@@ -26,16 +26,11 @@ interface Category {
   id: number;
   isSelected: boolean;
 }
-// const token = localStorage.getItem("token");
 
 export default function CategoryPage() {
-  // const [token, setToken] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
   const [categoryList, setCategoryList] = useState<Category[]>([]);
   const pageSize = 6;
-  const token = localStorage.getItem('token');
-  const headers = new Headers();
-  headers.set("Authorization", `Bearer ${token}`);
 
 	async function fetchUserCategories(page: number) {
 		try {
@@ -46,7 +41,6 @@ export default function CategoryPage() {
 				`${CONSTANTS.category.apiUrls}?page=${page}&pageSize=${pageSize}`,
 				{
 					method: "GET",
-					headers,
           credentials: "include",
 				}
 			);
@@ -73,7 +67,6 @@ export default function CategoryPage() {
     const res = await fetch(`${CONSTANTS.category.apiUrls}`, {
       method: "POST",
       body: JSON.stringify({ category_id: categoryId }),
-      headers,
       credentials: 'include'
     });
     const result: ResponseInterface = await res.json();
@@ -98,7 +91,6 @@ export default function CategoryPage() {
     const res = await fetch(`${CONSTANTS.category.apiUrls}`, {
       method: "DELETE",
       body: JSON.stringify({ category_id: categoryId }),
-      headers,
       credentials: 'include'
     });
     const result: ResponseInterface = await res.json();

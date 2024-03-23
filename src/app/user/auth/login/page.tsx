@@ -20,7 +20,7 @@ import React, { useEffect, useState } from "react";
 
 export default function LoginPage() {
 	const [formBusy, setFormBusy] = useState(false);
-	const [token, setToken] = useState('');
+	// const [token, setToken] = useState('');
 	const toast = useToast();
 	const router = useRouter();
 
@@ -34,13 +34,10 @@ export default function LoginPage() {
 				email,
 				password,
 			}); 
-			// const token = localStorage.getItem("token");
 			const headers = new Headers();
-			headers.set("Authorization", `Bearer ${token}`);
 			const response = await fetch(`${CONSTANTS.auth.login.apiUrl}`, {
 				method: "POST",
 				body: JSON.stringify({ email, password }),
-				headers,
 				credentials: 'include'
 			});
 
@@ -72,12 +69,6 @@ export default function LoginPage() {
 			});
 		}
 	}
-	useEffect(() => {
-		const storedToken = localStorage.getItem('token');
-		if (storedToken) {
-			setToken(storedToken);
-		}
-	}, []);
 	return (
 		<Container py={20} maxW={"2xl"}>
 			<Heading size={"xl"} fontWeight={400} textAlign={"center"} mb={12}>
