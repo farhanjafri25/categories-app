@@ -41,6 +41,7 @@ export default function LoginPage() {
 				method: "POST",
 				body: JSON.stringify({ email, password }),
 				headers,
+				credentials: 'include'
 			});
 
 			const result: ResponseInterface = await response.json();

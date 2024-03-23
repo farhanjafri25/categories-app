@@ -27,13 +27,14 @@ interface Category {
   isSelected: boolean;
 }
 // const token = localStorage.getItem("token");
-const headers = new Headers();
 
 export default function CategoryPage() {
-  const [token, setToken] = useState('');
+  // const [token, setToken] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
   const [categoryList, setCategoryList] = useState<Category[]>([]);
   const pageSize = 6;
+  const token = localStorage.getItem('token');
+  const headers = new Headers();
   headers.set("Authorization", `Bearer ${token}`);
 
 	async function fetchUserCategories(page: number) {
@@ -46,7 +47,7 @@ export default function CategoryPage() {
 				{
 					method: "GET",
 					headers,
-					credentials: "include",
+          credentials: "include",
 				}
 			);
 			const result: ResponseInterface = await res.json();
@@ -142,12 +143,8 @@ export default function CategoryPage() {
 	}
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-		if (storedToken) {
-			setToken(storedToken);
-		}
 		fetchUserCategories(currentPage);
-	}, [currentPage]);
+	}, []);
 
 	return (
 		<Container py={20} maxW={"2xl"}>

@@ -18,13 +18,14 @@ const saveCategoryObj = z.object({
 });
 
 export async function GET(req: NextRequest, context: any) {
-	try {
-		const token = req.headers.get("authorization")?.split(" ")[1];
-		console.log("GET ~ token:", token);
+    try {
+        const cookieToken = req.cookies.get('token')?.value;
+		// const token = req.headers.get("authorization")?.split(" ")[1];
+		// console.log("GET ~ token:", token);
 		let currentUser;
 		const categoryIds: string[] = [];
-		if (token) {
-			const session = await verifyAuth(token);
+		if (cookieToken) {
+			const session = await verifyAuth(cookieToken);
 			currentUser = session.user_id;
 		} else {
 			return prepareResponse({
@@ -77,11 +78,12 @@ export async function GET(req: NextRequest, context: any) {
 }
 
 export async function POST(req: NextRequest, res: NextResponse) {
-	try {
-		const token = req.headers.get("authorization")?.split(" ")[1];
+    try {
+        const cookieToken = req.cookies.get('token')?.value;
+		// const token = req.headers.get("authorization")?.split(" ")[1];
 		let userId;
-		if (token) {
-			const session = await verifyAuth(token);
+		if (cookieToken) {
+			const session = await verifyAuth(cookieToken);
 			userId = session.user_id;
 		} else {
 			return prepareResponse({
@@ -157,10 +159,11 @@ export async function DELETE(req: NextRequest, res: NextResponse) {
 		const body = await req.json();
 		let session;
 		const parsedData = saveCategoryObj.parse(body);
-		const { category_id } = parsedData;
-		const token = req.headers.get("authorization")?.split(" ")[1];
-		if (token) {
-			session = await verifyAuth(token);
+        const { category_id } = parsedData;
+        const cookieToken = req.cookies.get('token')?.value;
+		// const token = req.headers.get("authorization")?.split(" ")[1];
+		if (cookieToken) {
+			session = await verifyAuth(cookieToken);
 		} else {
 			return prepareResponse({
 				code: 401,
