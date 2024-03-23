@@ -26,19 +26,21 @@ interface propsInterface {
 }
 
 export default function OTPverify({ searchParams }: propsInterface) {
+	console.log("OTPverify ~ searchParams:", searchParams);
 	const [formBusy, setFormBusy] = useState(false);
 	const router = useRouter();
-	const searchParamsHook = useSearchParams();
+    // const searchParamsHook = useSearchParams();
+    
 	async function saveUserDetails(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
-		// const email = searchParams.email;
-		// const encryptedPassword = searchParams.password;
-		// console.log({
-		// 	email,
-		// 	encryptedPassword,
-		// });
-		const email = searchParamsHook.get("email");
-		const encryptedPassword = searchParamsHook.get("password");
+		const email = searchParams.email;
+		const encryptedPassword = searchParams.password;
+		console.log({
+			email,
+			encryptedPassword,
+		});
+		// const email = searchParamsHook.get("email");
+		// const encryptedPassword = searchParamsHook.get("password");
 		const decryptPassword = decryptText(String(encryptedPassword));
 		console.log({
 			email,
