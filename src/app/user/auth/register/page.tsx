@@ -21,7 +21,7 @@ import { ResponseInterface } from "@/interfaces/response.interface";
 import { CONSTANTS } from "@/constants/constants";
 import { encryptText } from "@/helpers/encryptText";
 
-export default function register() {
+export default function Register() {
 	const [formBusy, setFormBusy] = useState(false);
 	const toast = useToast();
 	const router = useRouter();

@@ -26,14 +26,15 @@ interface Category {
   id: number;
   isSelected: boolean;
 }
-const token = localStorage.getItem("token");
+// const token = localStorage.getItem("token");
 const headers = new Headers();
-headers.set("Authorization", `Bearer ${token}`);
 
 export default function CategoryPage() {
+  const [token, setToken] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
-	const [categoryList, setCategoryList] = useState<Category[]>([]);
-	const pageSize = 6;
+  const [categoryList, setCategoryList] = useState<Category[]>([]);
+  const pageSize = 6;
+  headers.set("Authorization", `Bearer ${token}`);
 
 	async function fetchUserCategories(page: number) {
 		try {
@@ -140,9 +141,13 @@ export default function CategoryPage() {
 		}
 	}
 
-	useEffect(() => {
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+		if (storedToken) {
+			setToken(storedToken);
+		}
 		fetchUserCategories(currentPage);
-	}, []);
+	}, [currentPage]);
 
 	return (
 		<Container py={20} maxW={"2xl"}>
