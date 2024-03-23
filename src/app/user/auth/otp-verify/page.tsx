@@ -15,8 +15,7 @@ import {
 	Toast,
 	VStack,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-// import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { FormEvent, useState } from "react";
 interface propsInterface {
 	params: {};
@@ -28,21 +27,19 @@ interface propsInterface {
 
 export default function OTPverify({ searchParams }: propsInterface) {
 	const [formBusy, setFormBusy] = useState(false);
-    const router = useRouter();
-    const { email, password } = router.query;
-    console.log({
-        email,
-        password
-    });
-    async function saveUserDetails(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-		const email = searchParams.email;
-		const encryptedPassword = searchParams.password;
-		console.log({
-			email,
-			encryptedPassword,
-		});
-		const decryptPassword = decryptText(encryptedPassword);
+	const router = useRouter();
+	const searchParamsHook = useSearchParams();
+	async function saveUserDetails(e: FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+		// const email = searchParams.email;
+		// const encryptedPassword = searchParams.password;
+		// console.log({
+		// 	email,
+		// 	encryptedPassword,
+		// });
+		const email = searchParamsHook.get("email");
+		const encryptedPassword = searchParamsHook.get("password");
+		const decryptPassword = decryptText(String(encryptedPassword));
 		console.log({
 			email,
 			decryptPassword,
@@ -99,7 +96,7 @@ export default function OTPverify({ searchParams }: propsInterface) {
 						Verification code
 					</Text>
 					<VStack gap={5} alignItems={"start"}>
-						<form onSubmit={(e)=> saveUserDetails(e)}>
+						<form onSubmit={(e) => saveUserDetails(e)}>
 							<HStack>
 								<PinInput otp size="lg">
 									<PinInputField borderRadius={12} />
