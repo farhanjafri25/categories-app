@@ -39,7 +39,7 @@ export async function POST(req: NextRequest, res: NextRequest) {
 				message: "Password do not match",
 				data: null,
 			});
-		}
+        }
 		const token = await new SignJWT({
 			user_id: findAccount.user_id,
 			email: findAccount.email,
@@ -57,7 +57,8 @@ export async function POST(req: NextRequest, res: NextRequest) {
 				code: 201,
 				message: "Logged in Successfully",
 				data: {
-					...findAccount,
+                    ...findAccount,
+                    password: '',
 					token,
 				},
 			},

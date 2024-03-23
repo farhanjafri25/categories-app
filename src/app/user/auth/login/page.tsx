@@ -43,7 +43,6 @@ export default function LoginPage() {
 			});
 
 			const result: ResponseInterface = await response.json();
-			console.log("loginUser ~ result:", result);
 			if (result.success) {
 				localStorage.setItem(
 					"auth",
@@ -128,7 +127,7 @@ export default function LoginPage() {
 							<Box my={2}>
 								<Text textAlign={"center"}>
 									Don&apos;t have and account?{" "}
-									<Link href={"/auth/register"} color={"brand"}>
+									<Link href={`${CONSTANTS.auth.register.pageUrl}`} color={"brand"}>
 										Register Here
 									</Link>
 								</Text>

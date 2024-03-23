@@ -25,7 +25,6 @@ export async function GET(req: NextRequest, context: any) {
 		const categoryIds: string[] = [];
 		if (token) {
 			const session = await verifyAuth(token);
-			console.log("GET ~ session:", session);
 			currentUser = session.user_id;
 		} else {
 			return prepareResponse({
@@ -36,12 +35,10 @@ export async function GET(req: NextRequest, context: any) {
 		}
 		const page = req.nextUrl.searchParams.get("page");
 		const pageSize = req.nextUrl.searchParams.get("pageSize");
-		console.log("GET ~ page:", page, pageSize);
 		const result: Category[] = await prisma.category.findMany({
 			skip: (Number(page) - 1) * Number(pageSize),
 			take: Number(pageSize),
 		});
-		console.log("GET ~ getCategoriesByPagination:", result);
 		if (!result) {
 			return prepareResponse({
 				code: 400,
@@ -61,7 +58,6 @@ export async function GET(req: NextRequest, context: any) {
 			},
 		});
         const mergedResult = mergeUserAndCategoryData(getUserSelectedCategory, result);
-        console.log("GET ~ mergedResult:", mergedResult);
 		return prepareResponse({
 			code: 200,
 			message: "OK",
@@ -83,11 +79,9 @@ export async function GET(req: NextRequest, context: any) {
 export async function POST(req: NextRequest, res: NextResponse) {
 	try {
 		const token = req.headers.get("authorization")?.split(" ")[1];
-		console.log("GET ~ token:", token);
 		let userId;
 		if (token) {
 			const session = await verifyAuth(token);
-			console.log("GET ~ session:", session);
 			userId = session.user_id;
 		} else {
 			return prepareResponse({
@@ -129,7 +123,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
 				category_id: category_id,
 			},
 		});
-		console.log("POST ~ saveUserCategory:", saveUserCategory);
 		if (!saveUserCategory) {
 			return prepareResponse({
 				code: 400,

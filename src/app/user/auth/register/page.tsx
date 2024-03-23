@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ResponseInterface } from "@/interfaces/response.interface";
 import { CONSTANTS } from "@/constants/constants";
+import { encryptText } from "@/helpers/encryptText";
 
 export default function register() {
 	const [formBusy, setFormBusy] = useState(false);
@@ -30,33 +31,33 @@ export default function register() {
 			const email = formData.get("email") || "";
 			const password = formData.get("password") || "";
 			const confirmPassword = formData.get("confirmPassword") || "";
-			console.log({
-				email,
-				password,
-				confirmPassword,
-			});
-			if (!email || !password || !confirmPassword) {
+			if (password !== confirmPassword) {
 				toast({
-					description: "All fields are required",
+					description: "Passwords do not match",
 					status: "error",
 				});
 				setFormBusy(false);
 				return;
 			}
-			const response = await fetch(`${CONSTANTS.auth.register.apiUrl}`, {
-				method: "POST",
-				body: JSON.stringify({ email, password, confirmPassword }),
-			});
-			const result: ResponseInterface = await response.json();
-			console.log("registerUser ~ result:", result);
-			if (result.success) {
-				router.replace("/category");
+			const emailExistsRes = await fetch(
+				`/api/auth/register-user?email=${email}`,
+				{
+					method: "GET",
+				}
+			);
+			const emailsExists: ResponseInterface = await emailExistsRes.json();
+			if (!emailsExists.success) {
+				toast({
+					description: `${emailsExists.message}`,
+					status: "error",
+				});
+				setFormBusy(false);
 				return;
 			}
-			toast({
-				description: `${result.message}`,
-				status: "error",
-			});
+			const encryptPasswordText = encryptText(String(password));
+			router.replace(
+				`/user/auth/otp-verify?email=${email}&password=${encryptPasswordText}`
+			);
 			return;
 		} catch (error) {
 			console.log("registerUser ~ error:", error);
@@ -117,10 +118,10 @@ export default function register() {
 									<Input
 										type={"password"}
 										isRequired
-										placeholder="Password"
+										placeholder="Confirm password"
 										isDisabled={formBusy}
 										disabled={formBusy}
-										name="password"
+										name="confirmPassword"
 									/>
 								</InputGroup>
 							</FormControl>
@@ -136,7 +137,9 @@ export default function register() {
 							<Box my={2}>
 								<Text textAlign={"center"}>
 									Already have and account?{" "}
-									<Link href={"/auth/login"} color={"brand"}>
+									<Link
+										href={`${CONSTANTS.auth.login.pageUrl}`}
+										color={"brand"}>
 										Login Here
 									</Link>
 								</Text>

@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { prepareResponse } from "@/helpers/utility";
 import { genSalt, hash } from "bcryptjs";
@@ -9,26 +9,17 @@ import { z } from "zod";
 const registerUser = z.object({
     email: z.string().email().min(1),
     password: z.string().min(1),
-    confirmPassword: z.string().min(1)
 })
 
 export async function POST(req: NextRequest) {
 	try {
         const body = await req.json();
         const parsedObj = registerUser.parse(body);
-		const { email, password, confirmPassword } = parsedObj;
+		const { email, password } = parsedObj;
 		console.log({
 			email,
 			password,
-			confirmPassword,
 		});
-		if (password !== confirmPassword) {
-			return prepareResponse({
-				code: 401,
-				message: "Passwords do not match",
-				data: null,
-			});
-		}
 		const foundAccount = await prisma.user.findFirst({
 			where: {
 				email: email,
@@ -63,14 +54,28 @@ export async function POST(req: NextRequest) {
 			updated_at: createdAccount.updated_at,
 		};
         const token = await new SignJWT(newUserPayload)
-			.setExpirationTime(24 * 60 * 60)
-			.sign(new TextEncoder().encode("jwtSecret"));
+            .setExpirationTime('1d')
+            .setProtectedHeader({ alg: "HS256" })
+            .sign(new TextEncoder().encode("jwtSecret"));
+        const maxAgeSeconds = 24 * 60 * 60;
 		console.log(`----- ~ POST ~ newUserPayload:`, newUserPayload);
-		return prepareResponse({
-			code: 201,
-			message: "Account created successfully",
-			data: { ...newUserPayload, token },
-		});
+		return NextResponse.json(
+            {
+                success: true,
+				code: 201,
+				message: "Logged in Successfully",
+				data: {
+                    ...newUserPayload,
+					token,
+				},
+			},
+			{
+				status: 201,
+				headers: {
+                    "Set-Cookie": `token=${token}; Max-Age=${maxAgeSeconds}; Path=/; HttpOnly; Secure; SameSite=Strict`,
+				},
+			}
+		);
 	} catch (error) {
         console.log(`----- ~ POST ~ error:`, error);
         if (error instanceof z.ZodError) {
@@ -86,4 +91,41 @@ export async function POST(req: NextRequest) {
 			data: null,
 		});
 	}
+}
+
+export async function GET(req: NextRequest) {
+    try {
+        const email = req.nextUrl.searchParams.get('email');
+        if (!email) {
+            return prepareResponse({
+                code: 400,
+                data: null,
+                message: 'Enter an email'
+            })
+        }
+        const findUserWithEmail = await prisma.user.findFirst({
+            where: {
+                email: String(email)
+            }
+        });
+        if (findUserWithEmail) {
+            return prepareResponse({
+                code: 400,
+                data: null,
+                message: "Account with this email already exists"
+            })
+        }
+        return prepareResponse({
+            code: 200,
+            message: "Success",
+            data: null
+        })
+    } catch (error) {
+        console.log("GET ~ error:", error);
+        return prepareResponse({
+            code: 400,
+            message: "Something went wrong",
+            data: null
+        })
+    }
 }

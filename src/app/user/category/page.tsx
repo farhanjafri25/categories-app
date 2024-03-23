@@ -31,9 +31,7 @@ const headers = new Headers();
 headers.set("Authorization", `Bearer ${token}`);
 
 export default function CategoryPage() {
-	const [formBusy, setFormBusy] = useState();
 	const [currentPage, setCurrentPage] = useState(1);
-	console.log("CategoryPage ~ currentPage:", currentPage);
 	const [categoryList, setCategoryList] = useState<Category[]>([]);
 	const pageSize = 6;
 
@@ -50,7 +48,6 @@ export default function CategoryPage() {
 					credentials: "include",
 				}
 			);
-			console.log(`response from fetch category`, res);
 			const result: ResponseInterface = await res.json();
 			if (result.success) {
 				setCategoryList(result?.data?.result);
@@ -68,7 +65,6 @@ export default function CategoryPage() {
 	}
 
 	async function selectCategory(categoryId: string) {
-    console.log("selectCategory ~ categoryId:", categoryId);
     if (!categoryId) {
       return
     }
@@ -94,7 +90,6 @@ export default function CategoryPage() {
   }
 
   async function removeCategory(categoryId: string) {
-    console.log("selectCategory ~ categoryId:", categoryId);
     if (!categoryId) {
       return
     }
