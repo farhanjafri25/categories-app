@@ -22,4 +22,14 @@ export function prepareResponse({
         status: code,
       }
     );
-  }
+}
+  
+export function mergeUserAndCategoryData(userSelectedCategories: any, categories: any) {
+  const mergedData = categories.map((category: any) => ({
+    ...category,
+    isSelected: userSelectedCategories.some(
+      (selectedCategory: any) => selectedCategory.category_id === category.category_id
+    ),
+  }));
+  return mergedData;
+}

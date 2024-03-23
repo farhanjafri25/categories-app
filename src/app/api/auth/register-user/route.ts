@@ -4,11 +4,19 @@ import { prepareResponse } from "@/helpers/utility";
 import { genSalt, hash } from "bcryptjs";
 import { generateId } from "@/helpers/unique-id";
 import { SignJWT } from "jose";
+import { z } from "zod";
+
+const registerUser = z.object({
+    email: z.string().email().min(1),
+    password: z.string().min(1),
+    confirmPassword: z.string().min(1)
+})
 
 export async function POST(req: NextRequest) {
 	try {
-		const body = await req.json();
-		const { email, password, confirmPassword } = body;
+        const body = await req.json();
+        const parsedObj = registerUser.parse(body);
+		const { email, password, confirmPassword } = parsedObj;
 		console.log({
 			email,
 			password,
@@ -64,7 +72,14 @@ export async function POST(req: NextRequest) {
 			data: { ...newUserPayload, token },
 		});
 	} catch (error) {
-		console.log(`----- ~ POST ~ error:`, error);
+        console.log(`----- ~ POST ~ error:`, error);
+        if (error instanceof z.ZodError) {
+            return prepareResponse({
+                code: 400,
+                message: "Input validation failed",
+                data: null
+            })
+        }
 		return prepareResponse({
 			code: 500,
 			message: "Something went wrong!",
