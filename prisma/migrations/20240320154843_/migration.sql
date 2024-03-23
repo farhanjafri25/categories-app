@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE `category_list` MODIFY `id` INTEGER NOT NULL AUTO_INCREMENT;
-
--- AlterTable
-ALTER TABLE `user_category` MODIFY `id` INTEGER NOT NULL AUTO_INCREMENT;
